@@ -4,25 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Upgrade v6.0</title>
-    <!-- Skulpt a Python futtatáshoz a böngészőben -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js" type="text/javascript"></script>
-    <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js" type="text/javascript"></script>
-    <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js" type="text/javascript"></script>
     <style>
         body { background-color: #0d1117; color: #58a6ff; font-family: 'Courier New', Courier, monospace; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .terminal-box { width: 100%; max-width: 600px; background-color: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 15px; box-shadow: 0px 4px 10px rgba(0,0,0,0.5); }
-        #output { white-space: pre-wrap; color: #7ee787; min-height: 200px; line-height: 1.5; margin-bottom: 15px; }
-        #input-area { display: flex; width: 100%; }
-        #cmd-input { background: transparent; border: none; color: #f0f6fc; font-family: inherit; font-size: 16px; flex-grow: 1; outline: none; }
-        .prompt { color: #f78166; margin-right: 10px; }
-        .btn { background-color: #238636; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-family: inherit; margin-bottom: 15px; }
+        .terminal-box { width: 100%; max-width: 600px; background-color: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 15px; box-shadow: 0px 4px 10px rgba(0,0,0,0.5); box-sizing: border-box; }
+        #output { white-space: pre-wrap; color: #7ee787; min-height: 250px; line-height: 1.5; margin-bottom: 15px; font-size: 15px; }
+        #input-area { display: flex; width: 100%; align-items: center; }
+        #cmd-input { background: transparent; border: none; color: #f0f6fc; font-family: inherit; font-size: 16px; flex-grow: 1; outline: none; padding: 0; }
+        .prompt { color: #f78166; margin-right: 10px; font-weight: bold; }
+        .btn { background-color: #238636; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 16px; margin-bottom: 20px; font-weight: bold; }
         .btn:hover { background-color: #2ea043; }
     </style>
 </head>
 <body>
 
     <h2>[SYSTEM] Server Uptime: 60 Years</h2>
-    <button class="btn" onclick="runPython()">PROGRAM INDÍTÁSA</button>
+    <button class="btn" id="start-btn" onclick="inditas()">PROGRAM INDÍTÁSA</button>
 
     <div class="terminal-box">
         <div id="output">Kattints a fenti gombra az inicializáláshoz...</div>
@@ -32,97 +28,76 @@
         </div>
     </div>
 
-<script type="text/javascript">
-// Ide jön a Python kód, amit a Skulpt lefordít a böngészőnek
-const pythonCode = `
-import time
+<script>
+const outputDiv = document.getElementById("output");
+const inputArea = document.getElementById("input-area");
+const cmdInput = document.getElementById("cmd-input");
+const startBtn = document.getElementById("start-btn");
 
-print("============================================================")
-print(">>> RENDSZERINDÍTÁS: Tanar_Verzio_6.0.sys ...")
-print("============================================================")
+let jatekSzakasz = "binaris"; 
 
-print("\\n[RENDSZERÜZENET]: Kritikus ellenőrzés szükséges.")
-kor = input("Írd be a korodat BINÁRISAN (6 biten) a belépéshez: ")
-
-if kor == "111100":
-    print("\\n[OK] Kód elfogadva. Tízes számrendszerben ez pontosan: 60.")
-    print("Sikeres frissítés! Ön hivatalosan is Senior Fejlesztő lett.")
-    print("\\n----------------------------------------")
-    print(">>> FŐMENÜ: Válassz hétvégi üzemmódot:")
-    print("[1] Horgászat (C:\\\\tópart\\\\pecázás.exe)")
-    print("[2] Bringázás & Túra (C:\\\\erdő\\\\hegynek_fel.bat)")
-    
-    opcio = input("\\nMelyik programot indítsuk el? (1 vagy 2): ")
-    if opcio == "1":
-        print("\\n[BETÖLTÉS] Pecabot élesítve... Csali kiválasztása...")
-        print("Sikerült fognod egy óriási pontyot!")
-        print("\\nA hal oldalára a következő kód van pikkelyezve:")
-        print("    print('Boldog 60. Születésnapot!')")
-    elif opcio == "2":
-        print("\\n[BETÖLTÉS] Kerékpár guminyomás rendben...")
-        print("Felértél a hegytetőre! A tesi tanár éned büszke.")
-        print("\\nA csúcskőbe vésve egy üzenetet találsz:")
-        print("    while élet < végtelen: print('Boldog 60!')")
-    else:
-        print("\\nBoldog 60. Születésnapot kívánok!")
-else:
-    print("\\n[HIBA] Helytelen kód! `SyntaxError: Túl fiatal vagy túl öreg.` Frissítsd az oldalt a próbához!")
-
-print("\\n============================================================")
-print(">>> PROGRAM VÉGE. Köszönjük az elmúlt 60 évet! <<<")
-print("============================================================")
-`;
-
-var inputBuffer = [];
-var currentResolver = null;
-
-function builtinRead(x) {
-    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
-        throw "File not found: '" + x + "'";
-    return Sk.builtinFiles["files"][x];
+// Gyönyörű gépelés effekt, mint a Pythonban volt
+function gepel(szoveg, callback) {
+    let i = 0;
+    function lep() {
+        if (i < szoveg.length) {
+            outputDiv.innerHTML += szoveg.charAt(i);
+            i++;
+            setTimeout(lep, 25);
+            window.scrollTo(0, document.body.scrollHeight);
+        } else {
+            outputDiv.innerHTML += "\n";
+            if (callback) callback();
+        }
+    }
+    lep();
 }
 
-function outf(text) {
-    var mypre = document.getElementById("output");
-    mypre.innerHTML = mypre.innerHTML + text;
-}
-
-function inf(prompt) {
-    if (prompt) { outf(prompt); }
-    document.getElementById("input-area").style.display = "flex";
-    document.getElementById("cmd-input").focus();
+function inditas() {
+    startBtn.style.display = "none";
+    outputDiv.innerHTML = "";
     
-    return new Promise(function(resolve) {
-        currentResolver = resolve;
+    gepel("============================================================\n>>> RENDSZERINDÍTÁS: Tanar_Verzio_6.0.sys ...\n============================================================\n\n[RENDSZERÜZENET]: Kritikus hiba! A rendszer korfüggő ellenőrzést kér.\n\nÍrd be a korodat BINÁRISAN (6 biten) a belépéshez: ", function() {
+        inputArea.style.display = "flex";
+        cmdInput.focus();
     });
 }
 
-document.getElementById("cmd-input").addEventListener("keypress", function(e) {
+cmdInput.addEventListener("keypress", function(e) {
     if (e.key === "Enter") {
-        var val = this.value;
-        outf(val + "\n");
-        this.value = "";
-        document.getElementById("input-area").style.display = "none";
-        if (currentResolver) {
-            var res = currentResolver;
-            currentResolver = null;
-            res(val);
+        let bemenet = cmdInput.value.trim();
+        outputDiv.innerHTML += bemenet + "\n";
+        cmdInput.value = "";
+        inputArea.style.display = "none";
+
+        if (jatekSzakasz === "binaris") {
+            if (bemenet === "111100") {
+                jatekSzakasz = "menu";
+                gepel("\n[OK] Kód elfogadva. Tízes számrendszerben ez pontosan: 60.\nSikeres frissítés! Ön hivatalosan is Senior Fejlesztő lett.\n\n----------------------------------------\n>>> FŐMENÜ: Válassz hétvégi üzemmódot:\n----------------------------------------\n[1] Horgászat (C:\\tópart\\pecázás.exe)\n[2] Bringázás & Túra (C:\\erdő\\hegynek_fel.bat)\n\nMelyik programot indítsuk el? (1 vagy 2): ", function() {
+                    inputArea.style.display = "flex";
+                    cmdInput.focus();
+                });
+            } else {
+                gepel("\n[HIBA] Helytelen kód! `SyntaxError: Túl fiatal vagy túl öreg.`\n\nÍrd be a korodat BINÁRISAN (6 biten) a belépéshez: ", function() {
+                    inputArea.style.display = "flex";
+                    cmdInput.focus();
+                });
+            }
+        } else if (jatekSzakasz === "menu") {
+            jatekSzakasz = "vege";
+            if (bemenet === "1") {
+                gepel("\n[BETÖLTÉS] Pecabot élesítve... Csali kiválasztása...\n\nSikerült fognod egy óriási pontyot!\nA hal oldalára a következő kód van pikkelyezve:\n\n    print('Boldog 60. Születésnapot!')", befejezes);
+            } else if (bemenet === "2") {
+                gepel("\n[BETÖLTÉS] Kerékpár guminyomás ellenőrzése... GPS koordináták betöltve...\n\nFelértél a hegytetőre! A tesi tanár éned büszke.\nA csúcskőbe vésve egy üzenetet találsz:\n\n    while élet < végtelen:\n        print('Boldog 60. Születésnapot!')", befejezes);
+            } else {
+                gepel("\n[HACKER DETECTED] Nem létező parancs. De mivel szülinapod van, elnézzük.\n\n    Annak ellenére, hogy nem tudsz gépelni: BOLDOG 60. SZÜLETÉSNAPOT!", befejezes);
+            }
         }
     }
 });
 
-function runPython() {
-    document.getElementById("output").innerHTML = '';
-    Sk.pre = "output";
-    Sk.configure({output:outf, read:builtinRead, inputfun:inf});
-    
-    Sk.misceval.asyncToPromise(function() {
-        return Sk.importMainWithBody("<stdin>", false, pythonCode, true);
-    }).then(function(mod) {
-        // Sikeres futás
-    }, function(err) {
-        outf(err.toString() + "\n");
-    });
+function befejezes() {
+    gepel("\n============================================================\n>>> PROGRAM VÉGE. Köszönjük, hogy 60 éve dekorálod a világot! <<<\n============================================================");
 }
 </script>
 </body>
