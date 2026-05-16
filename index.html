@@ -12,7 +12,7 @@
 
         h2 { z-index: 1; text-shadow: 0 0 10px rgba(88, 166, 255, 0.5); text-align: center; }
         .terminal-box { width: 100%; max-width: 650px; background-color: rgba(22, 27, 34, 0.92); border: 1px solid #30363d; border-radius: 6px; padding: 15px; box-shadow: 0px 4px 20px rgba(0,0,0,0.8); box-sizing: border-box; z-index: 1; }
-        #output { white-space: pre-wrap; color: #7ee787; min-height: 250px; line-height: 1.5; margin-bottom: 15px; font-size: 15px; text-shadow: 0 0 3px rgba(126, 231, 135, 0.3); }
+        #output { white-space: pre-wrap; color: #7ee787; min-height: 280px; line-height: 1.5; margin-bottom: 15px; font-size: 15px; text-shadow: 0 0 3px rgba(126, 231, 135, 0.3); }
         #input-area { display: flex; width: 100%; align-items: center; }
         #cmd-input { background: transparent; border: none; color: #f0f6fc; font-family: inherit; font-size: 16px; flex-grow: 1; outline: none; padding: 0; }
         .prompt { color: #f78166; margin-right: 10px; font-weight: bold; }
@@ -77,7 +77,7 @@ function gepel(szoveg, callback) {
         if (i < szoveg.length) {
             outputDiv.innerHTML += szoveg.charAt(i);
             i++;
-            setTimeout(lep, 20);
+            setTimeout(lep, 15);
             window.scrollTo(0, document.body.scrollHeight);
         } else {
             outputDiv.innerHTML += "\n";
@@ -91,7 +91,7 @@ function inditas() {
     startBtn.style.display = "none";
     outputDiv.innerHTML = "";
     
-    gepel("============================================================\n>>> RENDSZERINDÍTÁS: Tanar_Verzio_6.0.sys ...\n============================================================\n\n[RENDSZERÜZENET]: Kritikus hiba! A rendszer korfüggő ellenőrzést kér.\n\nÍrd be a korodat BINÁRISAN (6 biten) a belépéshez: ", function() {
+    gepel("============================================================\n>>> RENDSZERINDÍTÁS: Tanar_Verzio_6.0.sys ...\n============================================================\n\n[RENDSZERÜZENET]: A rendszer kor-ellenőrzést kér.\n\nÍrd be a korodat BINÁRISAN (6 biten) a belépéshez: ", function() {
         inputArea.style.display = "flex";
         cmdInput.focus();
     });
@@ -106,8 +106,21 @@ cmdInput.addEventListener("keypress", function(e) {
 
         if (jatekSzakasz === "binaris") {
             if (bemenet === "111100") {
-                jatekSzakasz = "menu";
-                gepel("\n[OK] Kód elfogadva. Tízes számrendszerben ez pontosan: 60.\nSikeres frissítés! Ön hivatalosan is Senior Fejlesztő lett.\n\n----------------------------------------\n>>> FŐMENÜ: Válassz hétvégi üzemmódot:\n----------------------------------------\n[1] Horgászat (C:\\tópart\\pecázás.exe)\n[2] Bringázás & Túra (C:\\erdő\\hegynek_fel.bat)\n\nMelyik programot indítsuk el? (1 vagy 2): ", function() {
+                jatekSzakasz = "erdelyseg_varas";
+                
+                let erdelysegek = "\n[OK] Kód elfogadva. Tízes számrendszerben ez pontosan: 60.\nSikeres frissítés! Ön hivatalosan is Senior Fejlesztő lett.\n\n" +
+                                  ">>> RENDSZER-INFORMÁCIÓ: Érdekességek a 60-as számról:\n" +
+                                  "- A periódusos rendszer 60. eleme a neodímium.\n" +
+                                  "- A legkisebb szám, amely osztható 1-től 6-ig minden számmal.\n" +
+                                  "- A legelső olyan szám, amelynek pontosan 12 osztója van.\n" +
+                                  "- Féltökéletes szám, egy tökéletes szám többszöröse.\n" +
+                                  "- Alakja a különböző számrendszerekben:\n" +
+                                  "  * Kettes (Bináris): 111100\n" +
+                                  "  * Nyolcas (Oktális): 74\n" +
+                                  "  * Tizenhatos (Hexadecimális): 3C\n\n" +
+                                  "Nyomj ENTER-t a Főmenü betöltéséhez... ";
+                                  
+                gepel(erdelysegek, function() {
                     inputArea.style.display = "flex";
                     cmdInput.focus();
                 });
@@ -117,21 +130,46 @@ cmdInput.addEventListener("keypress", function(e) {
                     cmdInput.focus();
                 });
             }
+        } else if (jatekSzakasz === "erdelyseg_varas") {
+            jatekSzakasz = "menu";
+            fomenuMegjelenites();
         } else if (jatekSzakasz === "menu") {
-            jatekSzakasz = "vege";
             if (bemenet === "1") {
-                gepel("\n[BETÖLTÉS] Pecabot élesítve... Csali kiválasztása...\n\nSikerült fognod egy óriási pontyot!\nA hal oldalára a következő kód van pikkelyezve:\n\n    print('Boldog 60. Születésnapot!')", befejezes);
+                gepel("\n[BETÖLTÉS] Pecabot élesítve... Csali kiválasztása...\n\nSikerült fognod egy óriási pontyot!\nA hal oldalára a következő van írva:\n\n    print('Boldog 60. Születésnapot!')\n\nNyomj ENTER-t a visszatéréshez...", function() {
+                    jatekSzakasz = "visszateres_varas";
+                    inputArea.style.display = "flex";
+                    cmdInput.focus();
+                });
             } else if (bemenet === "2") {
-                gepel("\n[BETÖLTÉS] Kerékpár lánc megolajozva... GPS koordináták betöltve...\n\nFelértél a hegytetőre! A tüdőd tele oxigénnel, az erdő csendes.\nA csúcskőbe vésve egy üzenetet találsz:\n\n    while élet < végtelen:\n        print('Boldog 60. Születésnapot!')", befejezes);
+                gepel("\n[BETÖLTÉS] Kerékpár Guminyomás ellenőrizve... GPS koordináták betöltve...\n\nFelértél a hegytetőre! A tüdőd tele oxigénnel, az erdő csendes.\nA csúcskőbe vésve egy üzenetet találsz:\n\n    if kor == 60:\n        print('Boldog születésnapot!')\n\nNyomj ENTER-t a visszatéréshez...", function() {
+                    jatekSzakasz = "visszateres_varas";
+                    inputArea.style.display = "flex";
+                    cmdInput.focus();
+                });
+            } else if (bemenet === "3") {
+                befejezes();
             } else {
-                gepel("\n[HACKER DETECTED] Nem létező parancs. De mivel szülinapod van, elnézzük.\n\n    BOLDOG 60. SZÜLETÉSNAPOT!", befejezes);
+                gepel("\n[HIBA] Ismeretlen opció. Próbáld újra!", function() {
+                    fomenuMegjelenites();
+                });
             }
+        } else if (jatekSzakasz === "visszateres_varas") {
+            jatekSzakasz = "menu";
+            fomenuMegjelenites();
         }
     }
 });
 
+function fomenuMegjelenites() {
+    gepel("\n----------------------------------------\n>>> FŐMENÜ: Válassz hétvégi üzemmódot:\n----------------------------------------\n[1] Horgászat (C:\\tópart\\pecázás.exe)\n[2] Bringázás & Túra (C:\\erdő\\hegynek_fel.bat)\n[3] Kilépés (Rendszer leállítása)\n\nMelyik programot indítsuk el? (1, 2 vagy 3): ", function() {
+        inputArea.style.display = "flex";
+        cmdInput.focus();
+    });
+}
+
 function befejezes() {
-    gepel("\n============================================================\n>>> PROGRAM VÉGE. Köszönjük, hogy 60 éve dekorálod a világot! <<<\n============================================================");
+    outputDiv.innerHTML += "\n";
+    gepel("=================================================================================\n>>> PROGRAM VÉGE. Sikeresen lefutott 60 év. Köszönjük a jelenléted a rendszerben! <<<\n=================================================================================");
 }
 
 window.addEventListener('resize', () => {
