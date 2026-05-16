@@ -12,7 +12,7 @@
 
         h2 { z-index: 1; text-shadow: 0 0 10px rgba(88, 166, 255, 0.5); text-align: center; }
         .terminal-box { width: 100%; max-width: 650px; background-color: rgba(22, 27, 34, 0.92); border: 1px solid #30363d; border-radius: 6px; padding: 15px; box-shadow: 0px 4px 20px rgba(0,0,0,0.8); box-sizing: border-box; z-index: 1; }
-        #output { white-space: pre-wrap; color: #7ee787; min-height: 280px; line-height: 1.4; margin-bottom: 15px; font-size: 14px; text-shadow: 0 0 3px rgba(126, 231, 135, 0.3); }
+        #output { white-space: pre-wrap; color: #7ee787; min-height: 250px; line-height: 1.5; margin-bottom: 15px; font-size: 15px; text-shadow: 0 0 3px rgba(126, 231, 135, 0.3); }
         #input-area { display: flex; width: 100%; align-items: center; }
         #cmd-input { background: transparent; border: none; color: #f0f6fc; font-family: inherit; font-size: 16px; flex-grow: 1; outline: none; padding: 0; }
         .prompt { color: #f78166; margin-right: 10px; font-weight: bold; }
@@ -77,7 +77,7 @@ function gepel(szoveg, callback) {
         if (i < szoveg.length) {
             outputDiv.innerHTML += szoveg.charAt(i);
             i++;
-            setTimeout(lep, 15); // Kicsit gyorsabb gépelés a hosszabb szövegek miatt
+            setTimeout(lep, 20);
             window.scrollTo(0, document.body.scrollHeight);
         } else {
             outputDiv.innerHTML += "\n";
@@ -107,7 +107,10 @@ cmdInput.addEventListener("keypress", function(e) {
         if (jatekSzakasz === "binaris") {
             if (bemenet === "111100") {
                 jatekSzakasz = "menu";
-                fomenuMegjelnites();
+                gepel("\n[OK] Kód elfogadva. Tízes számrendszerben ez pontosan: 60.\nSikeres frissítés! Ön hivatalosan is Senior Fejlesztő lett.\n\n----------------------------------------\n>>> FŐMENÜ: Válassz hétvégi üzemmódot:\n----------------------------------------\n[1] Horgászat (C:\\tópart\\pecázás.exe)\n[2] Bringázás & Túra (C:\\erdő\\hegynek_fel.bat)\n\nMelyik programot indítsuk el? (1 vagy 2): ", function() {
+                    inputArea.style.display = "flex";
+                    cmdInput.focus();
+                });
             } else {
                 gepel("\n[HIBA] Helytelen kód! `SyntaxError: Túl fiatal vagy túl öreg.`\n\nÍrd be a korodat BINÁRISAN (6 biten) a belépéshez: ", function() {
                     inputArea.style.display = "flex";
@@ -119,12 +122,7 @@ cmdInput.addEventListener("keypress", function(e) {
             if (bemenet === "1") {
                 gepel("\n[BETÖLTÉS] Pecabot élesítve... Csali kiválasztása...\n\nSikerült fognod egy óriási pontyot!\nA hal oldalára a következő kód van pikkelyezve:\n\n    print('Boldog 60. Születésnapot!')", befejezes);
             } else if (bemenet === "2") {
-                gepel("\n[BETÖLTÉS] Kerékpár lánc megolajozva... GPS koordináták betöltve...\n\nFelértél a hegytetőre! A tüdőd tele oxigénnel, a tesi tanár éned büszke.\nA csúcskőbe vésve egy üzenetet találsz:\n\n    while élet < végtelen:\n        print('Boldog 60. Születésnapot!')", befejezes);
-            } else if (bemenet === "3") {
-                let mp = 60 * 365.25 * 24 * 60 * 60; // 60 év másodpercben szökőévekkel
-                gepel(`\n[MATEK FAKULTÁCIÓ] Komplex egyenlet kiszámítása...\n\nMatematikailag bizonyított tény, hogy Ön már pontosan\nkb. ${mp.toLocaleString('hu-HU')} másodperce teszi jobb hellyé a világot!\n\nEbből az alkalomból a képlet eredménye:\n    60 év = Csodás élet.`, befejezes);
-            } else if (bemenet === "4") {
-                gepel("\n[TESI ÓRA] *SÍPSZÓ* !!! 📢\n\n\"Mindenki kettesével sorakozó! Az infó terem előtt folyosón futás nincs!\"\n\"Aki nem hozott felszerelést, az is beáll 60 fekvőtámaszra!\"\n\nNo de ma nincs tesi óra, úgyhogy inkább jöhet a torta!", befejezes);
+                gepel("\n[BETÖLTÉS] Kerékpár lánc megolajozva... GPS koordináták betöltve...\n\nFelértél a hegytetőre! A tüdőd tele oxigénnel, az erdő csendes.\nA csúcskőbe vésve egy üzenetet találsz:\n\n    while élet < végtelen:\n        print('Boldog 60. Születésnapot!')", befejezes);
             } else {
                 gepel("\n[HACKER DETECTED] Nem létező parancs. De mivel szülinapod van, elnézzük.\n\n    BOLDOG 60. SZÜLETÉSNAPOT!", befejezes);
             }
@@ -132,30 +130,8 @@ cmdInput.addEventListener("keypress", function(e) {
     }
 });
 
-function fomenuMegjelnites() {
-    gepel("\n[OK] Kód elfogadva. Tízes számrendszerben ez pontosan: 60.\nSikeres frissítés! Ön hivatalosan is Senior Fejlesztő lett.\n\n----------------------------------------\n>>> FŐMENÜ: Válassz hétvégi üzemmódot:\n----------------------------------------\n[1] Horgászat (C:\\tópart\\pecázás.exe)\n[2] Bringázás & Túra (C:\\erdő\\hegynek_fel.bat)\n[3] Matematika (C:\\matek\\idokapszula.py)\n[4] Tesi óra (C:\\tesi\\sorakozo.sh)\n\nMelyik programot indítsuk el? (1, 2, 3 vagy 4): ", function() {
-        inputArea.style.display = "flex";
-        cmdInput.focus();
-    });
-}
-
 function befejezes() {
-    // Óriási ASCII Art 60-as szám
-    const ascii60 = `
-      ########      ########  
-     ##//////##    ##//////## 
-    ##      //    ##      //##
-    #########    ##      // ##
-    ##//////##  ##      //  ##
-    ##      ##   ##      //## 
-    ########      ########    
-    ////////      ////////    
-    `;
-    
-    setTimeout(function() {
-        outputDiv.innerHTML += "\n" + ascii60 + "\n";
-        gepel("============================================================\n>>> PROGRAM VÉGE. Köszönjük, hogy 60 éve dekorálod a világot! <<<\n============================================================");
-    }, 500);
+    gepel("\n============================================================\n>>> PROGRAM VÉGE. Köszönjük, hogy 60 éve dekorálod a világot! <<<\n============================================================");
 }
 
 window.addEventListener('resize', () => {
