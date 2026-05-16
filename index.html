@@ -5,17 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Upgrade v6.0</title>
     <style>
-        body { background-color: #0d1117; color: #58a6ff; font-family: 'Courier New', Courier, monospace; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .terminal-box { width: 100%; max-width: 600px; background-color: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 15px; box-shadow: 0px 4px 10px rgba(0,0,0,0.5); box-sizing: border-box; }
-        #output { white-space: pre-wrap; color: #7ee787; min-height: 250px; line-height: 1.5; margin-bottom: 15px; font-size: 15px; }
+        body { background-color: #0d1117; color: #58a6ff; font-family: 'Courier New', Courier, monospace; padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow-x: hidden; position: relative; }
+        
+        /* Mátrix háttér canvas */
+        #matrix-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.15; }
+
+        h2 { z-index: 1; text-shadow: 0 0 10px rgba(88, 166, 255, 0.5); text-align: center; }
+        .terminal-box { width: 100%; max-width: 650px; background-color: rgba(22, 27, 34, 0.92); border: 1px solid #30363d; border-radius: 6px; padding: 15px; box-shadow: 0px 4px 20px rgba(0,0,0,0.8); box-sizing: border-box; z-index: 1; }
+        #output { white-space: pre-wrap; color: #7ee787; min-height: 280px; line-height: 1.4; margin-bottom: 15px; font-size: 14px; text-shadow: 0 0 3px rgba(126, 231, 135, 0.3); }
         #input-area { display: flex; width: 100%; align-items: center; }
         #cmd-input { background: transparent; border: none; color: #f0f6fc; font-family: inherit; font-size: 16px; flex-grow: 1; outline: none; padding: 0; }
         .prompt { color: #f78166; margin-right: 10px; font-weight: bold; }
-        .btn { background-color: #238636; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 16px; margin-bottom: 20px; font-weight: bold; }
+        .btn { background-color: #238636; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 16px; margin-bottom: 20px; font-weight: bold; z-index: 1; box-shadow: 0 0 10px rgba(35, 134, 54, 0.4); }
         .btn:hover { background-color: #2ea043; }
     </style>
 </head>
 <body>
+
+    <canvas id="matrix-canvas"></canvas>
 
     <h2>[SYSTEM] Server Uptime: 60 Years</h2>
     <button class="btn" id="start-btn" onclick="inditas()">PROGRAM INDÍTÁSA</button>
@@ -36,14 +43,41 @@ const startBtn = document.getElementById("start-btn");
 
 let jatekSzakasz = "binaris"; 
 
-// Gyönyörű gépelés effekt, mint a Pythonban volt
+// --- Mátrix Eső Effekt ---
+const canvas = document.getElementById('matrix-canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const katakana = '01010101010101111100';
+const alphabet = katakana.split('');
+const fontSize = 16;
+const columns = canvas.width / fontSize;
+const rainDrops = Array(Math.floor(columns)).fill(1);
+
+function drawMatrix() {
+    ctx.fillStyle = 'rgba(13, 17, 23, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#0f0';
+    ctx.font = fontSize + 'px monospace';
+    for (let i = 0; i < rainDrops.length; i++) {
+        const text = alphabet[Math.floor(Math.random() * alphabet.length)];
+        ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+        if (rainDrops[i] * fontSize > canvas.height && Math.random() * 0.975 > 0.95) {
+            rainDrops[i] = 0;
+        }
+        rainDrops[i]++;
+    }
+}
+setInterval(drawMatrix, 30);
+
+// --- Szöveggépelő motor ---
 function gepel(szoveg, callback) {
     let i = 0;
     function lep() {
         if (i < szoveg.length) {
             outputDiv.innerHTML += szoveg.charAt(i);
             i++;
-            setTimeout(lep, 25);
+            setTimeout(lep, 15); // Kicsit gyorsabb gépelés a hosszabb szövegek miatt
             window.scrollTo(0, document.body.scrollHeight);
         } else {
             outputDiv.innerHTML += "\n";
@@ -73,10 +107,7 @@ cmdInput.addEventListener("keypress", function(e) {
         if (jatekSzakasz === "binaris") {
             if (bemenet === "111100") {
                 jatekSzakasz = "menu";
-                gepel("\n[OK] Kód elfogadva. Tízes számrendszerben ez pontosan: 60.\nSikeres frissítés! Ön hivatalosan is Senior Fejlesztő lett.\n\n----------------------------------------\n>>> FŐMENÜ: Válassz hétvégi üzemmódot:\n----------------------------------------\n[1] Horgászat (C:\\tópart\\pecázás.exe)\n[2] Bringázás & Túra (C:\\erdő\\hegynek_fel.bat)\n\nMelyik programot indítsuk el? (1 vagy 2): ", function() {
-                    inputArea.style.display = "flex";
-                    cmdInput.focus();
-                });
+                fomenuMegjelnites();
             } else {
                 gepel("\n[HIBA] Helytelen kód! `SyntaxError: Túl fiatal vagy túl öreg.`\n\nÍrd be a korodat BINÁRISAN (6 biten) a belépéshez: ", function() {
                     inputArea.style.display = "flex";
@@ -88,17 +119,49 @@ cmdInput.addEventListener("keypress", function(e) {
             if (bemenet === "1") {
                 gepel("\n[BETÖLTÉS] Pecabot élesítve... Csali kiválasztása...\n\nSikerült fognod egy óriási pontyot!\nA hal oldalára a következő kód van pikkelyezve:\n\n    print('Boldog 60. Születésnapot!')", befejezes);
             } else if (bemenet === "2") {
-                gepel("\n[BETÖLTÉS] Kerékpár guminyomás ellenőrzése... GPS koordináták betöltve...\n\nFelértél a hegytetőre! A tesi tanár éned büszke.\nA csúcskőbe vésve egy üzenetet találsz:\n\n    while élet < végtelen:\n        print('Boldog 60. Születésnapot!')", befejezes);
+                gepel("\n[BETÖLTÉS] Kerékpár lánc megolajozva... GPS koordináták betöltve...\n\nFelértél a hegytetőre! A tüdőd tele oxigénnel, a tesi tanár éned büszke.\nA csúcskőbe vésve egy üzenetet találsz:\n\n    while élet < végtelen:\n        print('Boldog 60. Születésnapot!')", befejezes);
+            } else if (bemenet === "3") {
+                let mp = 60 * 365.25 * 24 * 60 * 60; // 60 év másodpercben szökőévekkel
+                gepel(`\n[MATEK FAKULTÁCIÓ] Komplex egyenlet kiszámítása...\n\nMatematikailag bizonyított tény, hogy Ön már pontosan\nkb. ${mp.toLocaleString('hu-HU')} másodperce teszi jobb hellyé a világot!\n\nEbből az alkalomból a képlet eredménye:\n    60 év = Csodás élet.`, befejezes);
+            } else if (bemenet === "4") {
+                gepel("\n[TESI ÓRA] *SÍPSZÓ* !!! 📢\n\n\"Mindenki kettesével sorakozó! Az infó terem előtt folyosón futás nincs!\"\n\"Aki nem hozott felszerelést, az is beáll 60 fekvőtámaszra!\"\n\nNo de ma nincs tesi óra, úgyhogy inkább jöhet a torta!", befejezes);
             } else {
-                gepel("\n[HACKER DETECTED] Nem létező parancs. De mivel szülinapod van, elnézzük.\n\n    Annak ellenére, hogy nem tudsz gépelni: BOLDOG 60. SZÜLETÉSNAPOT!", befejezes);
+                gepel("\n[HACKER DETECTED] Nem létező parancs. De mivel szülinapod van, elnézzük.\n\n    BOLDOG 60. SZÜLETÉSNAPOT!", befejezes);
             }
         }
     }
 });
 
-function befejezes() {
-    gepel("\n============================================================\n>>> PROGRAM VÉGE. Köszönjük, hogy 60 éve dekorálod a világot! <<<\n============================================================");
+function fomenuMegjelnites() {
+    gepel("\n[OK] Kód elfogadva. Tízes számrendszerben ez pontosan: 60.\nSikeres frissítés! Ön hivatalosan is Senior Fejlesztő lett.\n\n----------------------------------------\n>>> FŐMENÜ: Válassz hétvégi üzemmódot:\n----------------------------------------\n[1] Horgászat (C:\\tópart\\pecázás.exe)\n[2] Bringázás & Túra (C:\\erdő\\hegynek_fel.bat)\n[3] Matematika (C:\\matek\\idokapszula.py)\n[4] Tesi óra (C:\\tesi\\sorakozo.sh)\n\nMelyik programot indítsuk el? (1, 2, 3 vagy 4): ", function() {
+        inputArea.style.display = "flex";
+        cmdInput.focus();
+    });
 }
+
+function befejezes() {
+    // Óriási ASCII Art 60-as szám
+    const ascii60 = `
+      ########      ########  
+     ##//////##    ##//////## 
+    ##      //    ##      //##
+    #########    ##      // ##
+    ##//////##  ##      //  ##
+    ##      ##   ##      //## 
+    ########      ########    
+    ////////      ////////    
+    `;
+    
+    setTimeout(function() {
+        outputDiv.innerHTML += "\n" + ascii60 + "\n";
+        gepel("============================================================\n>>> PROGRAM VÉGE. Köszönjük, hogy 60 éve dekorálod a világot! <<<\n============================================================");
+    }, 500);
+}
+
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
 </script>
 </body>
 </html>
