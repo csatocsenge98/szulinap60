@@ -18,6 +18,10 @@
         .prompt { color: #f78166; margin-right: 10px; font-weight: bold; }
         .btn { background-color: #238636; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 16px; margin-bottom: 20px; font-weight: bold; z-index: 1; box-shadow: 0 0 10px rgba(35, 134, 54, 0.4); }
         .btn:hover { background-color: #2ea043; }
+        
+        /* Reszponzív elválasztó vonalak stílusa */
+        .separator { border-top: 2px dashed #58a6ff; margin: 15px 0; width: 100%; display: block; }
+        .separator-green { border-top: 2px solid #7ee787; margin: 15px 0; width: 100%; display: block; }
     </style>
 </head>
 <body>
@@ -87,13 +91,24 @@ function gepel(szoveg, callback) {
     lep();
 }
 
+// Segédfunkció az intelligens elválasztó vonalak beszúrásához
+function vonalBeszuras(tipus) {
+    let div = document.createElement('div');
+    div.className = tipus === 'green' ? 'separator-green' : 'separator';
+    outputDiv.appendChild(div);
+}
+
 function inditas() {
     startBtn.style.display = "none";
     outputDiv.innerHTML = "";
     
-    gepel("============================================================\n>>> RENDSZERINDÍTÁS: Tanar_Verzio_6.0.sys ...\n============================================================\n\n[RENDSZERÜZENET]: A rendszer kor-ellenőrzést kér.\n\nÍrd be a korodat BINÁRISAN (6 biten) a belépéshez: ", function() {
-        inputArea.style.display = "flex";
-        cmdInput.focus();
+    vonalBeszuras('green');
+    gepel(">>> RENDSZERINDÍTÁS: Tanar_Verzio_6.0.sys ...", function() {
+        vonalBeszuras('green');
+        gepel("\n[RENDSZERÜZENET]: A rendszer kor-ellenőrzést kér.\n\nÍrd be a korodat BINÁRISAN (6 biten) a belépéshez: ", function() {
+            inputArea.style.display = "flex";
+            cmdInput.focus();
+        });
     });
 }
 
@@ -161,15 +176,22 @@ cmdInput.addEventListener("keypress", function(e) {
 });
 
 function fomenuMegjelenites() {
-    gepel("\n----------------------------------------\n>>> FŐMENÜ: Válassz hétvégi üzemmódot:\n----------------------------------------\n[1] Horgászat (C:\\tópart\\pecázás.exe)\n[2] Bringázás & Túra (C:\\erdő\\hegynek_fel.bat)\n[3] Kilépés (Rendszer leállítása)\n\nMelyik programot indítsuk el? (1, 2 vagy 3): ", function() {
-        inputArea.style.display = "flex";
-        cmdInput.focus();
+    vonalBeszuras('blue');
+    gepel(">>> FŐMENÜ: Válassz hétvégi üzemmódot:", function() {
+        vonalBeszuras('blue');
+        gepel("[1] Horgászat (C:\\tópart\\pecázás.exe)\n[2] Bringázás & Túra (C:\\erdő\\hegynek_fel.bat)\n[3] Kilépés (Rendszer leállítása)\n\nMelyik programot indítsuk el? (1, 2 vagy 3): ", function() {
+            inputArea.style.display = "flex";
+            cmdInput.focus();
+        });
     });
 }
 
 function befejezes() {
     outputDiv.innerHTML += "\n";
-    gepel("=================================================================================\n>>> PROGRAM VÉGE. Sikeresen lefutott 60 év. Köszönjük a jelenléted a rendszerben! <<<\n=================================================================================");
+    vonalBeszuras('green');
+    gepel(">>> PROGRAM VÉGE. Köszönjük a 60 éves jelenléted a rendszerben! <<<", function() {
+        vonalBeszuras('green');
+    });
 }
 
 window.addEventListener('resize', () => {
